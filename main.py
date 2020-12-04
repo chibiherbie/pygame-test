@@ -73,9 +73,11 @@ class Game:
 def main():
     pygame.init()
     screen = pygame.display.set_mode(WINDOW_SIZE)
+    pygame.display.set_caption("Лабиринт")
 
     labyrinth = Labyrinth('simple_map.txt', [0, 2], 2)
-    hero = Hero((7, 7))
+    hero = Hero((8, 7))
+
     game = Game(labyrinth, hero)
 
     clock = pygame.time.Clock()
