@@ -3,7 +3,7 @@ from network import Network
 
 
 WINDOW_SIZE = WINDOW_WIDTH, WINDOW_HEIGHT = 480, 480
-FPS = 60
+FPS = 30
 TILE_SIZE = 32
 
 
@@ -35,8 +35,9 @@ class Labyrinth:
 
 
 class Hero:
-    def __init__(self, position):
+    def __init__(self, position, color):
         self.x, self.y = position
+        self.color = pygame.Color(str(color))
 
     def get_position(self):
         return self.x, self.y
@@ -46,20 +47,7 @@ class Hero:
 
     def render(self, screen):
         center = self.x * TILE_SIZE + TILE_SIZE // 2, self.y * TILE_SIZE + TILE_SIZE // 2
-        pygame.draw.circle(screen, (255, 255, 255), center, TILE_SIZE // 2)
-
-    # def update_hero(self):
-    #     next_x, next_y = self.get_position()
-    #     if pygame.key.get_pressed()[pygame.K_a]:
-    #         next_x -= 1
-    #     if pygame.key.get_pressed()[pygame.K_d]:
-    #         next_x += 1
-    #     if pygame.key.get_pressed()[pygame.K_w]:
-    #         next_y -= 1
-    #     if pygame.key.get_pressed()[pygame.K_s]:
-    #         next_y += 1
-    #
-    #     self.set_position((next_x, next_y))
+        pygame.draw.circle(screen, self.color, center, TILE_SIZE // 2)
 
 
 class Game:
@@ -88,44 +76,29 @@ class Game:
             self.hero1.set_position((next_x, next_y))
 
 
-def read_pos(str):
-    str = str.split(',')
-    return int(str[0]), int(str[1])
-
-
-def make_pos(tup):
-    return str(tup[0]) + ',' + str(tup[1])
-
-
 def main():
     pygame.init()
     screen = pygame.display.set_mode(WINDOW_SIZE)
     pygame.display.set_caption("Лабиринт")
 
     n = Network()
-    startPos = read_pos(n.getPos())
+
+    p1 = n.getP()
+    print(p1)
 
     labyrinth = Labyrinth('simple_map.txt', [0, 2], 2)
-
-    print(startPos)
-    p1 = Hero((startPos[0], startPos[1]))
-    p2 = Hero((6, 7))
-
-    game = Game(labyrinth, p1, p2)
 
     clock = pygame.time.Clock()
     running = True
     while running:
+        p2 = n.send(p1)
 
-        p2Pos = read_pos(n.send(make_pos(p1.get_position())))
-        p2.set_position(p2Pos)
-
+        game = Game(labyrinth, p1, p2)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
 
         game.update_hero()
-        screen.fill((0, 0, 0))
 
         game.render(screen)
 
